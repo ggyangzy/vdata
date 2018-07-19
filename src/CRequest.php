@@ -245,12 +245,13 @@ class CRequest extends CVData
 		//
 		//	send http request
 		//
-		$nRet = $this->_HttpSendRequest( $arrRequestData, $nTimeout, $sResponse, $nHttpStatus, $arrHttpHeaders );
+		$nRet = $this->_HttpSendRequest( $arrRequestData, $nTimeout, $sResponse, $nHttpStatus, $arrHttpHeaders, $arrCurlInfo );
 		$arrRawResponseReturn =
 			[
 				'data'		=> $sResponse,
 				'status'	=> $nHttpStatus,
 				'headers'	=> ( is_array( $arrHttpHeaders ) ? $arrHttpHeaders : [] ),
+                'curlinfo'	=> ( is_array( $arrCurlInfo ) ? $arrCurlInfo : [] ),
 			];
 
 		return $nRet;
@@ -315,7 +316,7 @@ class CRequest extends CVData
 		return ( isset( $oCUrl ) && false !== $oCUrl && is_resource( $oCUrl ) );
 	}
 
-	private function _HttpSendRequest( $arrRequest, $nTimeout = 5, & $sResponseBody = null, & $nHttpCode = 0, & $arrHttpHeaders = [] )
+	private function _HttpSendRequest( $arrRequest, $nTimeout = 5, & $sResponseBody = null, & $nHttpCode = 0, & $arrHttpHeaders = [], & $arrCurlInfo = [] )
 	{
 		if ( ! function_exists( 'curl_init' ) )
 		{
@@ -485,6 +486,7 @@ class CRequest extends CVData
 			$sResponseBody		= '';
 
 			//	...
+            $arrCurlInfo = curl_getinfo( $oCUrl );
 			$nHttpCode	= curl_getinfo( $oCUrl, CURLINFO_HTTP_CODE );
 			$nHeaderSize	= curl_getinfo( $oCUrl, CURLINFO_HEADER_SIZE );
 
